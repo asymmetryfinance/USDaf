@@ -8,24 +8,19 @@ import {OracleLibrary} from "@uniswap/v3-periphery/contracts/libraries/OracleLib
 import "../Dependencies/AggregatorV3Interface.sol";
 
 contract SpotUsdOracle is AggregatorV3Interface {
-    address public immutable token0; // usdc
-    address public immutable token1; // spot
+    address public constant token0 = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48; // usdc
+    address public constant token1 = 0xC1f33e0cf7e40a67375007104B929E49a581bafE; // spot
     address public immutable pool;
 
-    AggregatorV3Interface public immutable usdcUsdOracle;
+    AggregatorV3Interface public constant usdcUsdOracle = AggregatorV3Interface(0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6);
 
     int256 public constant UNIT = 1e8;
     int256 private constant TOKEN0_DECIMALS = 1e6;
     uint128 private constant TOKEN1_DECIMALS = 1e9;
 
-    constructor(address _usdcUsdOracle, address _factory, address _token0, address _token1, uint24 _fee) {
-        usdcUsdOracle = AggregatorV3Interface(_usdcUsdOracle);
-        if (usdcUsdOracle.decimals() != 8) revert("!ORACLE");
-
-        token0 = _token0;
-        token1 = _token1;
-
-        address _pool = IUniswapV3Factory(_factory).getPool(_token0, _token1, _fee);
+    constructor() {
+        address _univ3Factory = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
+        address _pool = IUniswapV3Factory(_univ3Factory).getPool(token0, token1, 10000);
         if (_pool == address(0)) revert("!POOL");
         pool = _pool;
     }

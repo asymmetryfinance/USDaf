@@ -11,7 +11,9 @@ import "./Interfaces/IInterestRouter.sol";
 contract MockInterestRouter is IInterestRouter, Ownable {
     using SafeERC20 for IERC20;
 
-    address private constant _OWNER = 0x318d0059efE546b5687FA6744aF4339391153981;
+    event Swept(address indexed token, address indexed to, uint256 amount);
+
+    address private constant _OWNER = 0x263b03BbA0BbbC320928B6026f5eAAFAD9F1ddeb;
 
     constructor() Ownable(_OWNER) {}
 
@@ -19,5 +21,6 @@ contract MockInterestRouter is IInterestRouter, Ownable {
         uint256 _balance = IERC20(_token).balanceOf(address(this));
         require(_balance > 0, "!BALANCE");
         IERC20(_token).safeTransfer(_to, _balance);
+        emit Swept(_token, _to, _balance);
     }
 }
