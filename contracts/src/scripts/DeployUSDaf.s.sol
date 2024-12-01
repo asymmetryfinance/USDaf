@@ -46,6 +46,8 @@ import {WETHPriceFeed} from "../PriceFeeds/WETHPriceFeed.sol";
 import {SpotUsdOracle} from "../PriceFeeds/SpotUsdOracle.sol";
 import {IWETH} from "../Interfaces/IWETH.sol";
 import {MockInterestRouter} from "../MockInterestRouter.sol";
+import {WrappedSpot} from "../WrappedSpot.sol";
+import {ISimpleProxyFactory} from "./Interfaces/ISimpleProxyFactory.sol";
 
 // ---- Usage ----
 
@@ -137,15 +139,17 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
     }
 
     address spotUsdOracle;
+    address wrappedSpot;
 
     uint256 constant _24_HOURS = 86400;
     address constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address constant SPOT = 0xC1f33e0cf7e40a67375007104B929E49a581bafE;
 
-    function run() external {
+    function run() public returns (DeploymentResult memory deployed) {
         SALT = keccak256(abi.encodePacked(block.timestamp));
 
-        // uint256 privateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        uint256 privateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         deployer = vm.addr(privateKey);
         vm.startBroadcast(privateKey);
 
@@ -157,10 +161,10 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
 
         string[] memory collNames = new string[](1);
         string[] memory collSymbols = new string[](1);
-        collNames[0] = "Ampleforth SPOT Token";
-        collSymbols[0] = "SPOT";
+        collNames[0] = "Ampleforth Wrapped SPOT Token";
+        collSymbols[0] = "WSPOT";
 
-        DeploymentResult memory deployed =
+        deployed =
             _deployAndConnectContracts(troveManagerParamsArray, collNames, collSymbols);
 
         vm.stopBroadcast();
@@ -199,6 +203,12 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         vars.collaterals = new IERC20Metadata[](vars.numCollaterals);
         vars.addressesRegistries = new IAddressesRegistry[](vars.numCollaterals);
         vars.troveManagers = new ITroveManager[](vars.numCollaterals);
+
+        // deploy wrapped spot
+        wrappedSpot = address(new WrappedSpot());
+        console2.log(wrappedSpot, "wrappedSpot: ");
+
+        vars.collaterals[0] = IERC20Metadata(wrappedSpot);
 
         // Deploy AddressesRegistries and get TroveManager addresses
         for (vars.i = 0; vars.i < vars.numCollaterals; vars.i++) {
@@ -274,7 +284,7 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
             SALT, keccak256(getBytecode(type(BorrowerOperations).creationCode, address(contracts.addressesRegistry)))
         );
 
-        spotUsdOracle = address(new SpotUsdOracle());
+        spotUsdOracle = _deployOracle();
         contracts.priceFeed = new WETHPriceFeed(addresses.borrowerOperations, spotUsdOracle, _24_HOURS);
         contracts.interestRouter = new MockInterestRouter();
 
@@ -352,7 +362,29 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         );
     }
 
-    // @todo - fix
+    function _deployOracle() internal returns (address _oracle) {
+        ISimpleProxyFactory _factory = ISimpleProxyFactory(0x156e0382068C3f96a629f51dcF99cEA5250B9eda);
+
+         // Set salt values
+        bytes32 _salt = bytes32(abi.encodePacked(deployer, uint96(0x012)));
+
+        // Sanity check
+        address _oracleProxyAddr = _factory.predictDeterministicAddress(_salt);
+        require(_oracleProxyAddr != address(0), "!ADDRESS");
+
+        // Deploy implementation
+        address __oracleImplementation = address(new SpotUsdOracle());
+
+        // Deploy proxy
+        _oracle = _factory.deployDeterministic(
+            _salt,
+            __oracleImplementation,
+            ""
+        );
+        require(_oracle == _oracleProxyAddr, "!PREDICT");
+    }
+
+    // @todo - fix?
     function _deployCurveBoldUsdcPool(IBoldToken _boldToken, IERC20 _usdc) internal returns (ICurveStableswapNGPool) {
         // // deploy Curve StableswapNG pool
         // address[] memory coins = new address[](2);
