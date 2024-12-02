@@ -48,6 +48,7 @@ import {IWETH} from "../Interfaces/IWETH.sol";
 import {MockInterestRouter} from "../MockInterestRouter.sol";
 import {WrappedSpot} from "../WrappedSpot.sol";
 import {ISimpleProxyFactory} from "./Interfaces/ISimpleProxyFactory.sol";
+import {UnwrappedZapper} from "../Zappers/UnwrappedZapper.sol";
 
 // ---- Usage ----
 
@@ -83,7 +84,7 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         GasPool gasPool;
         IInterestRouter interestRouter;
         IERC20Metadata collToken;
-        WETHZapper wethZapper;
+        UnwrappedZapper unwrappedZapper;
         GasCompZapper gasCompZapper;
         ILeverageZapper leverageZapper;
     }
@@ -360,6 +361,8 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
             address(contracts.borrowerOperations),
             address(contracts.activePool)
         );
+
+        contracts.unwrappedZapper = new UnwrappedZapper(contracts.addressesRegistry);
     }
 
     function _deployOracle() internal returns (address _oracle) {
@@ -431,7 +434,7 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
                     string.concat('"priceFeed":"', address(c.priceFeed).toHexString(), '",'),
                     string.concat('"gasPool":"', address(c.gasPool).toHexString(), '",'),
                     string.concat('"interestRouter":"', address(c.interestRouter).toHexString(), '",'),
-                    string.concat('"wethZapper":"', address(c.wethZapper).toHexString(), '",'),
+                    string.concat('"unwrappedZapper":"', address(c.unwrappedZapper).toHexString(), '",'),
                     string.concat('"gasCompZapper":"', address(c.gasCompZapper).toHexString(), '",'),
                     string.concat('"leverageZapper":"', address(c.leverageZapper).toHexString(), '",')
                 ),
