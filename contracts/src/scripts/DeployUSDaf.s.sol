@@ -60,7 +60,7 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
     using StringFormatting for *;
 
     ICurveStableswapNGFactory constant curveStableswapFactory =
-        ICurveStableswapNGFactory(0xfb37b8D939FFa77114005e61CFc2e543d6F49A81);
+        ICurveStableswapNGFactory(0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf);
     uint128 constant BOLD_TOKEN_INDEX = 0;
     uint128 constant USDC_INDEX = 1;
 
@@ -387,30 +387,29 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         require(_oracle == _oracleProxyAddr, "!PREDICT");
     }
 
-    // @todo - fix?
     function _deployCurveBoldUsdcPool(IBoldToken _boldToken, IERC20 _usdc) internal returns (ICurveStableswapNGPool) {
-        // // deploy Curve StableswapNG pool
-        // address[] memory coins = new address[](2);
-        // coins[BOLD_TOKEN_INDEX] = address(_boldToken);
-        // coins[USDC_INDEX] = address(_usdc);
-        // uint8[] memory assetTypes = new uint8[](2); // 0: standard
-        // bytes4[] memory methodIds = new bytes4[](2);
-        // address[] memory oracles = new address[](2);
-        // ICurveStableswapNGPool curvePool = curveStableswapFactory.deploy_plain_pool(
-        //     "USDC-USDaf",
-        //     "USDCUSDaf",
-        //     coins,
-        //     200, // A
-        //     1000000, // fee
-        //     20000000000, // _offpeg_fee_multiplier
-        //     865, // _ma_exp_time
-        //     0, // implementation id
-        //     assetTypes,
-        //     methodIds,
-        //     oracles
-        // );
+        // deploy Curve StableswapNG pool
+        address[] memory coins = new address[](2);
+        coins[BOLD_TOKEN_INDEX] = address(_boldToken);
+        coins[USDC_INDEX] = address(_usdc);
+        uint8[] memory assetTypes = new uint8[](2); // 0: standard
+        bytes4[] memory methodIds = new bytes4[](2);
+        address[] memory oracles = new address[](2);
+        ICurveStableswapNGPool curvePool = curveStableswapFactory.deploy_plain_pool(
+            "USDC-USDaf",
+            "USDCUSDaf",
+            coins,
+            200, // A
+            1000000, // fee
+            20000000000, // _offpeg_fee_multiplier
+            866, // _ma_exp_time
+            0, // implementation id
+            assetTypes,
+            methodIds,
+            oracles
+        );
 
-        // return curvePool;
+        return curvePool;
     }
 
     function _getBranchContractsJson(LiquityContractsTestnet memory c) internal pure returns (string memory) {
