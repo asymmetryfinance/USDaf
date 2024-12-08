@@ -369,7 +369,7 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         ISimpleProxyFactory _factory = ISimpleProxyFactory(0x156e0382068C3f96a629f51dcF99cEA5250B9eda);
 
          // Set salt values
-        bytes32 _salt = bytes32(abi.encodePacked(deployer, uint96(0x012)));
+        bytes32 _salt = bytes32(abi.encodePacked(deployer, uint96(0x0123)));
 
         // Sanity check
         address _oracleProxyAddr = _factory.predictDeterministicAddress(_salt);
@@ -388,28 +388,28 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
     }
 
     function _deployCurveBoldUsdcPool(IBoldToken _boldToken, IERC20 _usdc) internal returns (ICurveStableswapNGPool) {
-        // deploy Curve StableswapNG pool
-        address[] memory coins = new address[](2);
-        coins[BOLD_TOKEN_INDEX] = address(_boldToken);
-        coins[USDC_INDEX] = address(_usdc);
-        uint8[] memory assetTypes = new uint8[](2); // 0: standard
-        bytes4[] memory methodIds = new bytes4[](2);
-        address[] memory oracles = new address[](2);
-        ICurveStableswapNGPool curvePool = curveStableswapFactory.deploy_plain_pool(
-            "USDC-USDaf",
-            "USDCUSDaf",
-            coins,
-            200, // A
-            1000000, // fee
-            20000000000, // _offpeg_fee_multiplier
-            866, // _ma_exp_time
-            0, // implementation id
-            assetTypes,
-            methodIds,
-            oracles
-        );
+        // // deploy Curve StableswapNG pool
+        // address[] memory coins = new address[](2);
+        // coins[BOLD_TOKEN_INDEX] = address(_boldToken);
+        // coins[USDC_INDEX] = address(_usdc);
+        // uint8[] memory assetTypes = new uint8[](2); // 0: standard
+        // bytes4[] memory methodIds = new bytes4[](2);
+        // address[] memory oracles = new address[](2);
+        // ICurveStableswapNGPool curvePool = curveStableswapFactory.deploy_plain_pool(
+        //     "USDC-USDaf",
+        //     "USDCUSDaf",
+        //     coins,
+        //     200, // A
+        //     1000000, // fee
+        //     20000000000, // _offpeg_fee_multiplier
+        //     866, // _ma_exp_time
+        //     0, // implementation id
+        //     assetTypes,
+        //     methodIds,
+        //     oracles
+        // );
 
-        return curvePool;
+        // return curvePool;
     }
 
     function _getBranchContractsJson(LiquityContractsTestnet memory c) internal pure returns (string memory) {
@@ -489,3 +489,11 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         );
     }
 }
+
+// == Return ==
+// deployed: struct DeployUSDafScript.DeploymentResult DeploymentResult({ contractsArray: [LiquityContractsTestnet({ addressesRegistry: 0xEc500Fda25b00814935a251f407395A9040C8510, activePool: 0x1E357f9e9962Ce395A7D4b56a39367e38A812DA8, borrowerOperations: 0x88fc8916094Caf0b9cdb959CED2567C8AD04bbD9, collSurplusPool: 0xaadB8c77ac3B95529C1C015A3Ab1874d4dbaB821, defaultPool: 0x5BB81766905d46B726D8083f0881cbeE0278DE04, sortedTroves: 0xD2c48Ac7e8Afb139766093f6165B05482Abb1F49, stabilityPool: 0xb27F30D9d930AF8d231DE0b83f93755e8519c369, troveManager: 0xc5077D6131c422f8090D55200735badA10C237dF, troveNFT: 0xc73066683cB018e439CEF841fAECC3F35BDfD6E0, metadataNFT: 0x1139F1374985D00914a63346A7A993B68622558C, priceFeed: 0x5b601Ad4A40882421Be00F6b8ffF50F9bf804b78, gasPool: 0xfFb1AD11107C9b53273E493cE8905fa091583bf2, interestRouter: 0xe18547f5e5e30F991371beE3d9245986468A80F9, collToken: 0x253Da8f1F6cD0fb33AADc13999Df9B124F1df194, unwrappedZapper: 0x140c32b45Bbf84310139A37Da87Eedf14b166d37, gasCompZapper: 0x0000000000000000000000000000000000000000, leverageZapper: 0x0000000000000000000000000000000000000000 })], collateralRegistry: 0xA70D1455f393f709de0F94aB9e6d9F5777096650, boldToken: 0xfDE46D5B766138164680D5BBA2DC1a67b6e2a387, usdc: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, usdcCurvePool: 0x0000000000000000000000000000000000000000, hintHelpers: 0x3FabB13195599BEF352157A2c6C6937AEAd18a1F, multiTroveGetter: 0x483DF4b557Dda871b13c9d90cd900BadAC0EA3d7, exchangeHelpers: 0x0000000000000000000000000000000000000000 })
+
+// == Logs ==
+//   0x285E3b1E82f74A99D07D2aD25e159E75382bB43B deployer
+//   1019710610195366688 deployer balance
+//   0x253Da8f1F6cD0fb33AADc13999Df9B124F1df194 wrappedSpot:
