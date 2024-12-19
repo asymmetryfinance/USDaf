@@ -7,16 +7,14 @@ import {OracleLibrary} from "@uniswap/v3-periphery/contracts/libraries/OracleLib
 
 import "../Dependencies/AggregatorV3Interface.sol";
 
-contract SpotUsdOracle is AggregatorV3Interface {
-    address public constant token0 = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48; // usdc
-    address public constant token1 = 0xC1f33e0cf7e40a67375007104B929E49a581bafE; // spot
+contract WrappedAmplUsdOracle is AggregatorV3Interface {
+    address public constant token0 = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2; // weth
+    address public constant token1 = 0xEDB171C18cE90B633DB442f2A6F72874093b49Ef; // wampl
     address public immutable pool;
 
-    AggregatorV3Interface public constant usdcUsdOracle = AggregatorV3Interface(0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6);
+    AggregatorV3Interface public constant ethUsdOracle = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
 
     int256 public constant UNIT = 1e8;
-    int256 private constant TOKEN0_DECIMALS = 1e6;
-    uint128 private constant TOKEN1_DECIMALS = 1e9;
 
     constructor() {
         address _univ3Factory = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
@@ -43,8 +41,7 @@ contract SpotUsdOracle is AggregatorV3Interface {
             pool,
             300 // secondsAgo
         );
-        (, int256 _usdcUsdPrice,,,) = usdcUsdOracle.latestRoundData();
-        return int256(OracleLibrary.getQuoteAtTick(_tick, TOKEN1_DECIMALS, token1, token0)) * (UNIT / TOKEN0_DECIMALS)
-            * _usdcUsdPrice / UNIT;
+        (, int256 _ethUsdPrice,,,) = ethUsdOracle.latestRoundData();
+        return int256(OracleLibrary.getQuoteAtTick(_tick, uint128(uint256(UNIT)), token1, token0)) * _ethUsdPrice / UNIT;
     }
 }
