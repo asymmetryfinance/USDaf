@@ -362,7 +362,7 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
             address(contracts.activePool)
         );
 
-        contracts.unwrappedZapper = new UnwrappedZapper(contracts.addressesRegistry);
+        // contracts.unwrappedZapper = new UnwrappedZapper(contracts.addressesRegistry); // @todo
     }
 
     function _deployOracle() internal returns (address _oracle) {

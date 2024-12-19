@@ -12,16 +12,17 @@ import "../Dependencies/Constants.sol";
 contract UnwrappedZapper is BaseZapper {
     using SafeERC20 for IERC20;
 
-    IWrapper public immutable collToken; // WSPOT
-    IERC20 public constant unwrappedCollToken = IERC20(0xC1f33e0cf7e40a67375007104B929E49a581bafE); // SPOT
+    IWrapper public immutable collToken;
+    IERC20 public immutable unwrappedCollToken;
 
-    uint256 private constant _DECIMALS_DIFF = 9;
-
-    constructor(IAddressesRegistry _addressesRegistry)
+    constructor(IAddressesRegistry _addressesRegistry, address _unwrappedCollToken)
         BaseZapper(_addressesRegistry, IFlashLoanProvider(address(0)), IExchange(address(0)))
     {
         collToken = IWrapper(address(_addressesRegistry.collToken()));
         require(address(WETH) != address(collToken), "GCZ: Wrong coll branch");
+
+        unwrappedCollToken = IERC20(_unwrappedCollToken);
+        require(_unwrappedCollToken != address(0), "!_unwrappedCollToken");
 
         // Approve WETH to BorrowerOperations
         WETH.approve(address(borrowerOperations), type(uint256).max);
@@ -245,16 +246,9 @@ contract UnwrappedZapper is BaseZapper {
         require(success, "GCZ: Sending ETH failed");
     }
 
-    function _pullColl(uint256 _amount) internal {
-        uint256 collAmountInStrangeDecimals = _amount / 10 ** _DECIMALS_DIFF;
-        unwrappedCollToken.safeTransferFrom(msg.sender, address(this), collAmountInStrangeDecimals);
-        collToken.depositFor(address(this), collAmountInStrangeDecimals);
-    }
+    function _pullColl(uint256 _amount) internal virtual {}
 
-    function _sendColl(address _receiver, uint256 _amount) internal {
-        uint256 collAmountInStrangeDecimals = _amount / 10 ** _DECIMALS_DIFF;
-        collToken.withdrawTo(_receiver, collAmountInStrangeDecimals);
-    }
+    function _sendColl(address _receiver, uint256 _amount) internal virtual {}
 
     receive() external payable {}
 
