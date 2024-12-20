@@ -44,11 +44,14 @@ import {IRateProvider, IWeightedPool, IWeightedPoolFactory} from "./Interfaces/B
 import {IVault} from "./Interfaces/Balancer/IVault.sol";
 import {WETHPriceFeed} from "../PriceFeeds/WETHPriceFeed.sol";
 import {SpotUsdOracle} from "../PriceFeeds/SpotUsdOracle.sol";
+import {WrappedAmplUsdOracle} from "../PriceFeeds/WrappedAmplUsdOracle.sol";
 import {IWETH} from "../Interfaces/IWETH.sol";
 import {MockInterestRouter} from "../MockInterestRouter.sol";
 import {WrappedSpot} from "../WrappedSpot.sol";
 import {ISimpleProxyFactory} from "./Interfaces/ISimpleProxyFactory.sol";
 import {UnwrappedZapper} from "../Zappers/UnwrappedZapper.sol";
+import {SpotZapper} from "../Zappers/SpotZapper.sol";
+import {AmplZapper} from "../Zappers/AmplZapper.sol";
 
 // ---- Usage ----
 
@@ -84,9 +87,10 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         GasPool gasPool;
         IInterestRouter interestRouter;
         IERC20Metadata collToken;
-        UnwrappedZapper unwrappedZapper;
+        address zapper;
         GasCompZapper gasCompZapper;
         ILeverageZapper leverageZapper;
+        address oracle;
     }
 
     struct LiquityContractAddresses {
@@ -139,8 +143,8 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         IExchangeHelpers exchangeHelpers;
     }
 
-    address spotUsdOracle;
     address wrappedSpot;
+    address wrappedAmpl = 0xEDB171C18cE90B633DB442f2A6F72874093b49Ef;
 
     uint256 constant _24_HOURS = 86400;
     address constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
@@ -157,13 +161,16 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         console2.log(deployer, "deployer");
         console2.log(deployer.balance, "deployer balance");
 
-        TroveManagerParams[] memory troveManagerParamsArray = new TroveManagerParams[](1);
-        troveManagerParamsArray[0] = TroveManagerParams(150e16, 110e16, 110e16, 5e16, 10e16); // SPOT
+        TroveManagerParams[] memory troveManagerParamsArray = new TroveManagerParams[](2);
+        troveManagerParamsArray[0] = TroveManagerParams(150e16, 110e16, 110e16, 5e16, 10e16); // WSPOT
+        troveManagerParamsArray[1] = TroveManagerParams(150e16, 110e16, 110e16, 5e16, 10e16); // WAMPL
 
-        string[] memory collNames = new string[](1);
-        string[] memory collSymbols = new string[](1);
+        string[] memory collNames = new string[](2);
+        string[] memory collSymbols = new string[](2);
         collNames[0] = "Ampleforth Wrapped SPOT Token";
+        collNames[1] = "Ampleforth Wrapped AMPL Token";
         collSymbols[0] = "WSPOT";
+        collSymbols[1] = "WAMPL";
 
         deployed =
             _deployAndConnectContracts(troveManagerParamsArray, collNames, collSymbols);
@@ -186,7 +193,6 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
     ) internal returns (DeploymentResult memory r) {
         assert(_collNames.length == troveManagerParamsArray.length);
         assert(_collSymbols.length == troveManagerParamsArray.length);
-        require(_collNames.length == 1, "!LENGTH");
 
         DeploymentVarsTestnet memory vars;
         vars.numCollaterals = troveManagerParamsArray.length;
@@ -210,6 +216,7 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         console2.log(wrappedSpot, "wrappedSpot: ");
 
         vars.collaterals[0] = IERC20Metadata(wrappedSpot);
+        vars.collaterals[1] = IERC20Metadata(wrappedAmpl);
 
         // Deploy AddressesRegistries and get TroveManager addresses
         for (vars.i = 0; vars.i < vars.numCollaterals; vars.i++) {
@@ -285,8 +292,13 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
             SALT, keccak256(getBytecode(type(BorrowerOperations).creationCode, address(contracts.addressesRegistry)))
         );
 
-        spotUsdOracle = _deployOracle();
-        contracts.priceFeed = new WETHPriceFeed(addresses.borrowerOperations, spotUsdOracle, _24_HOURS);
+        if (address(_collToken) == address(wrappedSpot)) {
+            contracts.oracle = _deploySpotOracle();
+        } else {
+            contracts.oracle = _deployWamplOracle();
+        }
+
+        contracts.priceFeed = new WETHPriceFeed(addresses.borrowerOperations, contracts.oracle, _24_HOURS);
         contracts.interestRouter = new MockInterestRouter();
 
         addresses.troveManager = _troveManagerAddress;
@@ -362,10 +374,14 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
             address(contracts.activePool)
         );
 
-        // contracts.unwrappedZapper = new UnwrappedZapper(contracts.addressesRegistry); // @todo
+        if (address(_collToken) == address(wrappedSpot)) {
+            contracts.zapper = address(new SpotZapper(contracts.addressesRegistry));
+        } else {
+            contracts.zapper = address(new AmplZapper(contracts.addressesRegistry));
+        }
     }
 
-    function _deployOracle() internal returns (address _oracle) {
+    function _deploySpotOracle() internal returns (address _oracle) {
         ISimpleProxyFactory _factory = ISimpleProxyFactory(0x156e0382068C3f96a629f51dcF99cEA5250B9eda);
 
          // Set salt values
@@ -387,6 +403,29 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         require(_oracle == _oracleProxyAddr, "!PREDICT");
     }
 
+    function _deployWamplOracle() internal returns (address _oracle) {
+        ISimpleProxyFactory _factory = ISimpleProxyFactory(0x156e0382068C3f96a629f51dcF99cEA5250B9eda);
+
+         // Set salt values
+        bytes32 _salt = bytes32(abi.encodePacked(deployer, uint96(0x01234)));
+
+        // Sanity check
+        address _oracleProxyAddr = _factory.predictDeterministicAddress(_salt);
+        require(_oracleProxyAddr != address(0), "!ADDRESS");
+
+        // Deploy implementation
+        address __oracleImplementation = address(new WrappedAmplUsdOracle());
+
+        // Deploy proxy
+        _oracle = _factory.deployDeterministic(
+            _salt,
+            __oracleImplementation,
+            ""
+        );
+        require(_oracle == _oracleProxyAddr, "!PREDICT");
+    }
+
+    // @todo -- uncomment
     function _deployCurveBoldUsdcPool(IBoldToken _boldToken, IERC20 _usdc) internal returns (ICurveStableswapNGPool) {
         // // deploy Curve StableswapNG pool
         // address[] memory coins = new address[](2);
@@ -433,7 +472,7 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
                     string.concat('"priceFeed":"', address(c.priceFeed).toHexString(), '",'),
                     string.concat('"gasPool":"', address(c.gasPool).toHexString(), '",'),
                     string.concat('"interestRouter":"', address(c.interestRouter).toHexString(), '",'),
-                    string.concat('"unwrappedZapper":"', address(c.unwrappedZapper).toHexString(), '",'),
+                    string.concat('"zapper":"', address(c.zapper).toHexString(), '",'),
                     string.concat('"gasCompZapper":"', address(c.gasCompZapper).toHexString(), '",'),
                     string.concat('"leverageZapper":"', address(c.leverageZapper).toHexString(), '",')
                 ),
