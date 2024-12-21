@@ -9,7 +9,7 @@ import {IWrapper} from "./Interfaces/IWrapper.sol";
 import "./BaseZapper.sol";
 import "../Dependencies/Constants.sol";
 
-contract UnwrappedZapper is BaseZapper {
+abstract contract UnwrappedZapper is BaseZapper {
     using SafeERC20 for IERC20;
 
     IWrapper public immutable collToken;
