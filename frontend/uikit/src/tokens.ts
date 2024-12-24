@@ -5,12 +5,14 @@ import tokenEth from "./token-icons/eth.svg";
 import tokenLqty from "./token-icons/lqty.svg";
 import tokenLusd from "./token-icons/lusd.svg";
 import tokenReth from "./token-icons/reth.svg";
+import tokenSpot from "./token-icons/spot.svg";
+import tokenUsdaf from "./token-icons/usdaf.svg";
 import tokenSteth from "./token-icons/wsteth.svg";
 
-export type CollateralSymbol = "ETH" | "RETH" | "WSTETH";
+export type CollateralSymbol = "ETH" | "SPOT" | "RETH" | "WSTETH";
 
 export function isCollateralSymbol(symbol: string): symbol is CollateralSymbol {
-  return symbol === "ETH" || symbol === "RETH" || symbol === "WSTETH";
+  return symbol === "ETH" || symbol === "SPOT" || symbol === "RETH" || symbol === "WSTETH";
 }
 
 export type CollateralToken = Token & {
@@ -22,6 +24,12 @@ export const LUSD: Token = {
   icon: tokenLusd,
   name: "LUSD",
   symbol: "LUSD" as const,
+} as const;
+
+export const USDAF: Token = {
+  icon: tokenUsdaf,
+  name: "USDaf",
+  symbol: "USDAF" as const,
 } as const;
 
 export const BOLD: Token = {
@@ -57,17 +65,27 @@ export const WSTETH: CollateralToken = {
   symbol: "WSTETH" as const,
 } as const;
 
+export const SPOT: CollateralToken = {
+  collateralRatio: 1.2,
+  icon: tokenSpot,
+  name: "SPOT",
+  symbol: "SPOT" as const,
+} as const;
+
 export const COLLATERALS: CollateralToken[] = [
   ETH,
+  SPOT,
   RETH,
   WSTETH,
 ];
 
 export const TOKENS_BY_SYMBOL = {
   BOLD,
+  SPOT,
   ETH,
   LQTY,
   RETH,
   WSTETH,
   LUSD,
+  USDAF,
 } as const;

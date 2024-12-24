@@ -15,9 +15,10 @@ Arguments:
                   Options take precedence over network presets. Available presets:
                   - local: Deploy to a local network
                   - sepolia: Deploy to Ethereum Sepolia
-                  - mainnet: Deploy to the Ethereum mainnet (not implemented)
+                  - mainnet: Deploy to Graph Studio
+                  - arbitrum-sepolia: Deploy to Arbitrum Sepolia
+                  - studio: Deploy to Graph Studio with custom options
                   - liquity-testnet: Deploy to the Liquity v2 testnet (not implemented)
-
 
 Options:
   --create                                 Create the subgraph before deploying.
@@ -56,7 +57,7 @@ export async function main() {
     graphNode: argv["graph-node"],
     ipfsNode: argv["ipfs-node"],
     name: argv["name"],
-    network: argv["network"], // subgraph network, not to be confused with the network preset
+    network: argv["network"],
     version: argv["version"],
   };
 
@@ -68,6 +69,14 @@ export async function main() {
   }
 
   let isLocal = false;
+  let isStudio = false;
+
+  let graphDeployCommand: string[] = [
+    "graph",
+    "deploy",
+    "--network-file",
+    GENERATED_NETWORKS_JSON_PATH,
+  ];
 
   // network preset: local
   if (networkPreset === "local") {
@@ -83,14 +92,40 @@ export async function main() {
     options.network ??= "sepolia";
   }
 
-  // network preset: liquity-testnet
-  if (networkPreset === "liquity-testnet") {
-    // TODO: implement
+  // network preset: mainnet (using studio)
+  if (networkPreset === "mainnet") {
+    options.name ??= "usdaf-test-mainnet";
+    options.network ??= "mainnet";
+    isStudio = true;
+    graphDeployCommand = [
+      "graph",
+      "deploy",
+      "--studio",
+      "--network-file",
+      GENERATED_NETWORKS_JSON_PATH,
+    ];
   }
 
-  // network preset: mainnet
-  if (networkPreset === "mainnet") {
-    // TODO: implement
+  // network preset: arbitrum-sepolia
+  if (networkPreset === "arbitrum-sepolia") {
+    options.name ??= "liquity2/arbitrum-sepolia";
+    options.graphNode ??= "http://localhost:8020/";
+    options.ipfsNode ??= "http://localhost:5001/";
+    options.network ??= "arbitrum-sepolia";
+  }
+
+  // network preset: studio
+  if (networkPreset === "studio") {
+    options.name ??= "username/subgraph-name";
+    options.network ??= "arbitrum-sepolia";
+    isStudio = true;
+    graphDeployCommand = [
+      "graph",
+      "deploy",
+      "--studio",
+      "--network-file",
+      GENERATED_NETWORKS_JSON_PATH,
+    ];
   }
 
   if (!options.name) {
@@ -99,10 +134,10 @@ export async function main() {
   if (!options.network) {
     throw new Error("--network <SUBGRAPH_NETWORK> is required");
   }
-  if (!options.graphNode && !options.network) {
+  if (!isStudio && !options.graphNode && !options.network) {
     throw new Error("--graph-node <GRAPH_NODE_URL> is required");
   }
-  if (!options.ipfsNode && !options.network) {
+  if (!isStudio && !options.ipfsNode && !options.network) {
     throw new Error("--ipfs-node <IPFS_NODE_URL> is required");
   }
 
@@ -122,21 +157,20 @@ export async function main() {
     options.name,
   ];
 
-  const graphDeployCommand: string[] = [
-    "graph",
-    "deploy",
-    "--network-file",
-    GENERATED_NETWORKS_JSON_PATH,
-  ];
+  if (!isStudio) {
+    if (options.graphNode) graphDeployCommand.push("--node", options.graphNode);
+    if (options.ipfsNode) graphDeployCommand.push("--ipfs", options.ipfsNode);
+  }
 
-  if (options.graphNode) graphDeployCommand.push("--node", options.graphNode);
   if (options.network) graphDeployCommand.push("--network", options.network);
   if (options.version) graphDeployCommand.push("--version-label", options.version);
-  if (options.ipfsNode) graphDeployCommand.push("--ipfs", options.ipfsNode);
 
   graphDeployCommand.push(options.name);
 
-  await updateNetworksWithLocalBoldToken();
+  if (isLocal) {
+    await updateNetworksWithLocalBoldToken();
+  }
+
   await generateNetworksJson(isLocal);
 
   echo`
@@ -144,10 +178,11 @@ Deploying subgraph:
 
   NAME:               ${options.name}
   VERSION:            ${options.version}
-  GRAPH NODE:         ${options.graphNode}
-  IPFS NODE:          ${options.ipfsNode}
+  GRAPH NODE:         ${options.graphNode || "Using Studio"}
+  IPFS NODE:          ${options.ipfsNode || "Using Studio"}
   CREATE:             ${options.create ? "yes" : "no"}
   DEBUG:              ${options.debug ? "yes" : "no"}
+  STUDIO:             ${isStudio ? "yes" : "no"}
 `;
 
   $.verbose = options.debug;
@@ -157,12 +192,12 @@ Deploying subgraph:
   echo("Subgraph build complete.");
   echo("");
 
-  if (graphCreateCommand) {
+  if (graphCreateCommand && !isStudio) {
     await $`pnpm ${graphCreateCommand}`;
+    echo("");
+    echo("Subgraph create complete.");
+    echo("");
   }
-  echo("");
-  echo("Subgraph create complete.");
-  echo("");
 
   await $`pnpm ${graphDeployCommand}`;
   echo("");

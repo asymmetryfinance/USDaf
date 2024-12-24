@@ -5,6 +5,7 @@ export function generateStaticParams() {
     { pool: "eth" },
     { pool: "reth" },
     { pool: "wsteth" },
+    { pool: "spot" },
   ];
 }
 

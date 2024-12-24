@@ -189,7 +189,7 @@ export const InterestRateField = memo(
                     return ({
                       label: modeContent.label,
                       secondary: modeContent.secondary,
-                      disabled: mode === "strategy",
+                      disabled: mode === "strategy" || mode === "delegate",
                       disabledReason: "Coming soon",
                     });
                   })}

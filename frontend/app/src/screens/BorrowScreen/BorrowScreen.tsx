@@ -105,7 +105,7 @@ export function BorrowScreen() {
   ] as const)));
 
   const collBalance = balances[collateral.symbol];
-
+  console.log({ collBalance });
   const troveCount = useTrovesCount(account.address ?? null, collIndex);
 
   const loanDetails = getLoanDetails(

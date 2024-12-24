@@ -86,6 +86,52 @@ export enum BorrowerInfo_OrderBy {
   TrovesByCollateral = 'trovesByCollateral'
 }
 
+export type CollSurplus = {
+  __typename?: 'CollSurplus';
+  amount: Scalars['BigInt']['output'];
+  id: Scalars['String']['output'];
+};
+
+export type CollSurplus_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  amount?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  amount_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_not?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  and?: InputMaybe<Array<InputMaybe<CollSurplus_Filter>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  or?: InputMaybe<Array<InputMaybe<CollSurplus_Filter>>>;
+};
+
+export enum CollSurplus_OrderBy {
+  Amount = 'amount',
+  Id = 'id'
+}
+
 export type Collateral = {
   __typename?: 'Collateral';
   addresses: CollateralAddresses;
@@ -899,6 +945,8 @@ export type Query = {
   _meta?: Maybe<_Meta_>;
   borrowerInfo?: Maybe<BorrowerInfo>;
   borrowerInfos: Array<BorrowerInfo>;
+  collSurplus?: Maybe<CollSurplus>;
+  collSurpluses: Array<CollSurplus>;
   collateral?: Maybe<Collateral>;
   collateralAddresses?: Maybe<CollateralAddresses>;
   collateralAddresses_collection: Array<CollateralAddresses>;
@@ -950,6 +998,24 @@ export type QueryBorrowerInfosArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<BorrowerInfo_Filter>;
+};
+
+
+export type QueryCollSurplusArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID']['input'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryCollSurplusesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<CollSurplus_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<CollSurplus_Filter>;
 };
 
 
@@ -1472,6 +1538,8 @@ export type Subscription = {
   _meta?: Maybe<_Meta_>;
   borrowerInfo?: Maybe<BorrowerInfo>;
   borrowerInfos: Array<BorrowerInfo>;
+  collSurplus?: Maybe<CollSurplus>;
+  collSurpluses: Array<CollSurplus>;
   collateral?: Maybe<Collateral>;
   collateralAddresses?: Maybe<CollateralAddresses>;
   collateralAddresses_collection: Array<CollateralAddresses>;
@@ -1523,6 +1591,24 @@ export type SubscriptionBorrowerInfosArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<BorrowerInfo_Filter>;
+};
+
+
+export type SubscriptionCollSurplusArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID']['input'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionCollSurplusesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<CollSurplus_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<CollSurplus_Filter>;
 };
 
 
@@ -1895,18 +1981,18 @@ export type Trove = {
   id: Scalars['ID']['output'];
   interestBatch?: Maybe<InterestBatch>;
   interestRate: Scalars['BigInt']['output'];
+  mightBeLeveraged: Scalars['Boolean']['output'];
   stake: Scalars['BigInt']['output'];
   status: TroveStatus;
   troveId: Scalars['String']['output'];
   updatedAt: Scalars['BigInt']['output'];
-  usedLeverageZapper: Scalars['Boolean']['output'];
 };
 
 export enum TroveStatus {
   Active = 'active',
-  ClosedByLiquidation = 'closedByLiquidation',
-  ClosedByOwner = 'closedByOwner',
-  Zombie = 'zombie'
+  Closed = 'closed',
+  Liquidated = 'liquidated',
+  Redeemed = 'redeemed'
 }
 
 export type Trove_Filter = {
@@ -2013,6 +2099,10 @@ export type Trove_Filter = {
   interestRate_lte?: InputMaybe<Scalars['BigInt']['input']>;
   interestRate_not?: InputMaybe<Scalars['BigInt']['input']>;
   interestRate_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  mightBeLeveraged?: InputMaybe<Scalars['Boolean']['input']>;
+  mightBeLeveraged_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
+  mightBeLeveraged_not?: InputMaybe<Scalars['Boolean']['input']>;
+  mightBeLeveraged_not_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
   or?: InputMaybe<Array<InputMaybe<Trove_Filter>>>;
   stake?: InputMaybe<Scalars['BigInt']['input']>;
   stake_gt?: InputMaybe<Scalars['BigInt']['input']>;
@@ -2054,10 +2144,6 @@ export type Trove_Filter = {
   updatedAt_lte?: InputMaybe<Scalars['BigInt']['input']>;
   updatedAt_not?: InputMaybe<Scalars['BigInt']['input']>;
   updatedAt_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
-  usedLeverageZapper?: InputMaybe<Scalars['Boolean']['input']>;
-  usedLeverageZapper_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
-  usedLeverageZapper_not?: InputMaybe<Scalars['Boolean']['input']>;
-  usedLeverageZapper_not_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
 };
 
 export enum Trove_OrderBy {
@@ -2082,11 +2168,11 @@ export enum Trove_OrderBy {
   InterestBatchDebt = 'interestBatch__debt',
   InterestBatchId = 'interestBatch__id',
   InterestRate = 'interestRate',
+  MightBeLeveraged = 'mightBeLeveraged',
   Stake = 'stake',
   Status = 'status',
   TroveId = 'troveId',
-  UpdatedAt = 'updatedAt',
-  UsedLeverageZapper = 'usedLeverageZapper'
+  UpdatedAt = 'updatedAt'
 }
 
 export type _Block_ = {
@@ -2142,14 +2228,14 @@ export type TrovesByAccountQueryVariables = Exact<{
 }>;
 
 
-export type TrovesByAccountQuery = { __typename?: 'Query', troves: Array<{ __typename?: 'Trove', id: string, borrower: string, closedAt?: bigint | null, createdAt: bigint, updatedAt: bigint, debt: bigint, deposit: bigint, interestRate: bigint, stake: bigint, troveId: string, usedLeverageZapper: boolean, collateral: { __typename?: 'Collateral', id: string, minCollRatio: bigint, collIndex: number, token: { __typename?: 'Token', symbol: string, name: string } }, interestBatch?: { __typename?: 'InterestBatch', id: string, annualInterestRate: bigint, annualManagementFee: bigint, batchManager: string } | null }> };
+export type TrovesByAccountQuery = { __typename?: 'Query', troves: Array<{ __typename?: 'Trove', id: string, borrower: string, closedAt?: bigint | null, createdAt: bigint, updatedAt: bigint, debt: bigint, deposit: bigint, interestRate: bigint, stake: bigint, troveId: string, collateral: { __typename?: 'Collateral', id: string, minCollRatio: bigint, collIndex: number, token: { __typename?: 'Token', symbol: string, name: string } }, interestBatch?: { __typename?: 'InterestBatch', id: string, annualInterestRate: bigint, annualManagementFee: bigint, batchManager: string } | null }> };
 
 export type TroveByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type TroveByIdQuery = { __typename?: 'Query', trove?: { __typename?: 'Trove', id: string, borrower: string, closedAt?: bigint | null, createdAt: bigint, updatedAt: bigint, debt: bigint, deposit: bigint, interestRate: bigint, stake: bigint, troveId: string, usedLeverageZapper: boolean, collateral: { __typename?: 'Collateral', id: string, minCollRatio: bigint, collIndex: number, token: { __typename?: 'Token', symbol: string, name: string } }, interestBatch?: { __typename?: 'InterestBatch', id: string, annualInterestRate: bigint, annualManagementFee: bigint, batchManager: string } | null } | null };
+export type TroveByIdQuery = { __typename?: 'Query', trove?: { __typename?: 'Trove', id: string, borrower: string, closedAt?: bigint | null, createdAt: bigint, updatedAt: bigint, debt: bigint, deposit: bigint, interestRate: bigint, stake: bigint, troveId: string, collateral: { __typename?: 'Collateral', id: string, minCollRatio: bigint, collIndex: number, token: { __typename?: 'Token', symbol: string, name: string } }, interestBatch?: { __typename?: 'InterestBatch', id: string, annualInterestRate: bigint, annualManagementFee: bigint, batchManager: string } | null } | null };
 
 export type StabilityPoolQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2256,7 +2342,6 @@ export const TrovesByAccountDocument = new TypedDocumentString(`
     interestRate
     stake
     troveId
-    usedLeverageZapper
   }
 }
     `) as unknown as TypedDocumentString<TrovesByAccountQuery, TrovesByAccountQueryVariables>;
@@ -2288,7 +2373,6 @@ export const TroveByIdDocument = new TypedDocumentString(`
     interestRate
     stake
     troveId
-    usedLeverageZapper
   }
 }
     `) as unknown as TypedDocumentString<TroveByIdQuery, TroveByIdQueryVariables>;

@@ -79,7 +79,6 @@ export const TrovesByAccountQuery = graphql(`
       interestRate
       stake
       troveId
-      usedLeverageZapper
     }
   }
 `);
@@ -112,7 +111,6 @@ export const TroveByIdQuery = graphql(`
       interestRate
       stake
       troveId
-      usedLeverageZapper
     }
   }
 `);

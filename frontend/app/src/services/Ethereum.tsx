@@ -113,7 +113,7 @@ export function useBalance(
     functionName: "balanceOf",
     args: address && [address],
     query: {
-      select: (value) => dnum18(value ?? 0n),
+      select: (value) => token === "SPOT" ? dnum18(value ?? 0n, 9) : dnum18(value ?? 0n),
       enabled: Boolean(!demoMode.enabled && address && token !== "ETH"),
     },
   });

@@ -1,5 +1,5 @@
 import type { Delegate, Position, PositionLoanUncommitted } from "@/src/types";
-import type { CollateralToken } from "@liquity2/uikit";
+import { type CollateralToken } from "@liquity2/uikit";
 import type { Dnum } from "dnum";
 
 import { INTEREST_RATE_INCREMENT, INTEREST_RATE_MAX, INTEREST_RATE_MIN } from "@/src/constants";
@@ -10,6 +10,7 @@ export const PRICE_UPDATE_VARIATION = 0.003;
 export const PRICE_UPDATE_MANUAL = false;
 
 export const LQTY_PRICE = dn.from(0.64832, 18);
+export const SPOT_PRICE = dn.from(1.28, 18);
 export const ETH_PRICE = dn.from(2_580.293872, 18);
 export const RETH_PRICE = dn.from(2_884.72294, 18);
 export const WSTETH_PRICE = dn.from(2_579.931, 18);
@@ -30,6 +31,8 @@ export const ACCOUNT_BALANCES = {
   LQTY: dn.from(2008.217, 18),
   RETH: dn.from(1.3732, 18),
   WSTETH: dn.from(17.912, 18),
+  SPOT: dn.from(17.912, 18),
+  USDAF: dn.from(1_200, 18),
   LUSD: dn.from(1_200, 18),
 } as const;
 
@@ -97,8 +100,12 @@ export const BORROW_STATS = {
     collIndex: 1,
     totalDeposited: dn.from(22_330.9548, 18),
   },
-  WSTETH: {
+  SPOT: {
     collIndex: 2,
+    totalDeposited: dn.from(18_030.9548, 18),
+  },
+  WSTETH: {
+    collIndex: 3,
     totalDeposited: dn.from(18_030.9548, 18),
   },
 } as const;
@@ -114,6 +121,10 @@ export const EARN_POOLS: Record<
   RETH: {
     apr: dn.from(0.057, 18),
     boldQty: [44_100_000n, 0],
+  },
+  SPOT: {
+    apr: dn.from(0.054, 18),
+    boldQty: [25_700_000n, 0],
   },
   WSTETH: {
     apr: dn.from(0.054, 18),

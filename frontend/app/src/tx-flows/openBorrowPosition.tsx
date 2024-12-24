@@ -275,7 +275,6 @@ export const openBorrowPosition: FlowDeclaration<Request, Step> = {
         ],
       };
     }
-
     // LeverageWETHZapper mode
     if (stepId === "openTroveEth") {
       return {

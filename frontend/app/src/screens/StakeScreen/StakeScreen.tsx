@@ -63,10 +63,6 @@ export function StakeScreen() {
           <HFlex>
             {content.stakeScreen.headline(
               <TokenIcon size={24} symbol="LQTY" />,
-              <TokenIcon.Group>
-                <TokenIcon symbol="LUSD" />
-                <TokenIcon symbol="ETH" />
-              </TokenIcon.Group>,
             )}
           </HFlex>
         ),

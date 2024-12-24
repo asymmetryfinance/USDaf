@@ -2,8 +2,8 @@ import type { Dnum } from "dnum";
 
 import * as dn from "dnum";
 
-export function dnum18(value: string | bigint | number): Dnum {
-  return [BigInt(value), 18];
+export function dnum18(value: string | bigint | number, decimals: number = 18): Dnum {
+  return [BigInt(value), decimals];
 }
 
 export function dnumMax(a: Dnum, ...rest: Dnum[]) {

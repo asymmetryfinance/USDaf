@@ -9,12 +9,12 @@
   },
   "mainnet": {
     "BoldToken": {
-      "address": "0x0000000000000000000000000000000000000000",
-      "startBlock": 0
+      "address": "0xfde46d5b766138164680d5bba2dc1a67b6e2a387",
+      "startBlock": 21359718
     },
     "Governance": {
       "address": "0x0000000000000000000000000000000000000000",
-      "startBlock": 0
+      "startBlock": 21359718
     }
   },
   "sepolia": {

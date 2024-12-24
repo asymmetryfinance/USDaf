@@ -14,6 +14,7 @@ import {
   PRICE_UPDATE_MANUAL as DEMO_PRICE_UPDATE_MANUAL,
   PRICE_UPDATE_VARIATION as DEMO_PRICE_UPDATE_VARIATION,
   RETH_PRICE as DEMO_RETH_PRICE,
+  SPOT_PRICE as DEMO_SPOT_PRICE,
   WSTETH_PRICE as DEMO_WSTETH_PRICE,
 } from "@/src/demo-mode";
 import { dnum18, jsonStringifyWithDnum } from "@/src/dnum-utils";
@@ -38,6 +39,7 @@ const initialPrices: Prices = {
   ETH: null,
   RETH: null,
   WSTETH: null,
+  SPOT: null,
 };
 
 const PRICE_REFRESH_INTERVAL = 60_000;
@@ -57,6 +59,7 @@ function useWatchCollateralPrice(collateral: CollateralSymbol) {
 const coinGeckoTokenIds = {
   LQTY: "liquity",
   LUSD: "liquity-usd",
+  SPOT: "spot",
 } as const;
 
 function useCoinGeckoPrice(supportedSymbol: keyof typeof coinGeckoTokenIds) {
@@ -108,6 +111,7 @@ let useWatchPrices = function useWatchPrices(callback: (prices: Prices) => void)
   const ethPrice = useWatchCollateralPrice("ETH");
   const rethPrice = useWatchCollateralPrice("RETH");
   const wstethPrice = useWatchCollateralPrice("WSTETH");
+  const spotPrice = useCoinGeckoPrice("SPOT");
   const lqtyPrice = useCoinGeckoPrice("LQTY");
   const lusdPrice = useCoinGeckoPrice("LUSD");
 
@@ -118,6 +122,7 @@ let useWatchPrices = function useWatchPrices(callback: (prices: Prices) => void)
     ETH: null,
     RETH: null,
     WSTETH: null,
+    SPOT: null,
   });
 
   useEffect(() => {
@@ -125,6 +130,7 @@ let useWatchPrices = function useWatchPrices(callback: (prices: Prices) => void)
       BOLD: dn.from(1, 18), // TODO
       LQTY: lqtyPrice.data ? dn.from(lqtyPrice.data, 18) : null,
       LUSD: lusdPrice.data ? dn.from(lusdPrice.data, 18) : null,
+      SPOT: spotPrice.data ? dn.from(spotPrice.data, 18) : null,
 
       ETH: ethPrice.data ? dnum18(ethPrice.data) : null,
       RETH: rethPrice.data ? dnum18(rethPrice.data) : null,
@@ -142,6 +148,7 @@ let useWatchPrices = function useWatchPrices(callback: (prices: Prices) => void)
     ethPrice,
     rethPrice,
     wstethPrice,
+    spotPrice,
     lqtyPrice,
     lusdPrice,
   ]);
@@ -160,6 +167,7 @@ if (DEMO_MODE) {
           ETH: dn.add(DEMO_ETH_PRICE, dn.mul(DEMO_ETH_PRICE, variation())),
           RETH: dn.add(DEMO_RETH_PRICE, dn.mul(DEMO_RETH_PRICE, variation())),
           WSTETH: dn.add(DEMO_WSTETH_PRICE, dn.mul(DEMO_WSTETH_PRICE, variation())),
+          SPOT: dn.add(DEMO_WSTETH_PRICE, dn.mul(DEMO_WSTETH_PRICE, variation())),
         });
       };
 

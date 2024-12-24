@@ -419,7 +419,8 @@ function subgraphTroveToLoan(
   }
 
   return {
-    type: trove.usedLeverageZapper ? "leverage" : "borrow",
+    // type: trove.usedLeverageZapper ? "leverage" : "borrow",
+    type: "borrow",
     batchManager: isAddress(trove.interestBatch?.batchManager)
       ? trove.interestBatch.batchManager
       : null,
