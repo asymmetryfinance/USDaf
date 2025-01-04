@@ -14,7 +14,6 @@ import {
   PRICE_UPDATE_MANUAL as DEMO_PRICE_UPDATE_MANUAL,
   PRICE_UPDATE_VARIATION as DEMO_PRICE_UPDATE_VARIATION,
   RETH_PRICE as DEMO_RETH_PRICE,
-  SPOT_PRICE as DEMO_SPOT_PRICE,
   WSTETH_PRICE as DEMO_WSTETH_PRICE,
 } from "@/src/demo-mode";
 import { dnum18, jsonStringifyWithDnum } from "@/src/dnum-utils";
