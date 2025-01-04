@@ -102,7 +102,7 @@ export function StakeScreen() {
     </Screen>
   );
 }
-
+// ------------------------------------------------------------
 function PanelUpdateStake() {
   const account = useAccount();
   const txFlow = useTransactionFlow();
