@@ -425,30 +425,29 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         require(_oracle == _oracleProxyAddr, "!PREDICT");
     }
 
-    // @todo -- uncomment
     function _deployCurveBoldUsdcPool(IBoldToken _boldToken, IERC20 _usdc) internal returns (ICurveStableswapNGPool) {
-        // // deploy Curve StableswapNG pool
-        // address[] memory coins = new address[](2);
-        // coins[BOLD_TOKEN_INDEX] = address(_boldToken);
-        // coins[USDC_INDEX] = address(_usdc);
-        // uint8[] memory assetTypes = new uint8[](2); // 0: standard
-        // bytes4[] memory methodIds = new bytes4[](2);
-        // address[] memory oracles = new address[](2);
-        // ICurveStableswapNGPool curvePool = curveStableswapFactory.deploy_plain_pool(
-        //     "USDC-USDaf",
-        //     "USDCUSDaf",
-        //     coins,
-        //     200, // A
-        //     1000000, // fee
-        //     20000000000, // _offpeg_fee_multiplier
-        //     866, // _ma_exp_time
-        //     0, // implementation id
-        //     assetTypes,
-        //     methodIds,
-        //     oracles
-        // );
+        // deploy Curve StableswapNG pool
+        address[] memory coins = new address[](2);
+        coins[BOLD_TOKEN_INDEX] = address(_boldToken);
+        coins[USDC_INDEX] = address(_usdc);
+        uint8[] memory assetTypes = new uint8[](2); // 0: standard
+        bytes4[] memory methodIds = new bytes4[](2);
+        address[] memory oracles = new address[](2);
+        ICurveStableswapNGPool curvePool = curveStableswapFactory.deploy_plain_pool(
+            "USDC-USDaf",
+            "USDCUSDaf",
+            coins,
+            200, // A
+            1000000, // fee
+            20000000000, // _offpeg_fee_multiplier
+            866, // _ma_exp_time
+            0, // implementation id
+            assetTypes,
+            methodIds,
+            oracles
+        );
 
-        // return curvePool;
+        return curvePool;
     }
 
     function _getBranchContractsJson(LiquityContractsTestnet memory c) internal pure returns (string memory) {
