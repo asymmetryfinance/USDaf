@@ -149,6 +149,8 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         IExchangeHelpers exchangeHelpers;
     }
 
+    MetadataNFT metadataNFT;
+
     address wrappedSpot;
     address wrappedAmpl = 0xEDB171C18cE90B633DB442f2A6F72874093b49Ef;
 
@@ -236,6 +238,8 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         r.hintHelpers = new HintHelpers(r.collateralRegistry);
         r.multiTroveGetter = new MultiTroveGetter(r.collateralRegistry);
 
+        metadataNFT = deployMetadata(SALT);
+
         // Deploy per-branch contracts for each branch
         for (vars.i = 0; vars.i < vars.numCollaterals; vars.i++) {
             vars.contracts = _deployAndConnectCollateralContractsMainnet(
@@ -288,11 +292,11 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
         contracts.addressesRegistry = _addressesRegistry;
 
         // Deploy Metadata
-        contracts.metadataNFT = deployMetadata(SALT);
+        contracts.metadataNFT = metadataNFT;
         addresses.metadataNFT = vm.computeCreate2Address(
             SALT, keccak256(getBytecode(type(MetadataNFT).creationCode, address(initializedFixedAssetReader)))
         );
-        assert(address(contracts.metadataNFT) == addresses.metadataNFT);
+        assert(address(contracts.metadataNFT) == addresses.metadataNFT && address(contracts.metadataNFT) != address(0));
 
         addresses.borrowerOperations = vm.computeCreate2Address(
             SALT, keccak256(getBytecode(type(BorrowerOperations).creationCode, address(contracts.addressesRegistry)))
