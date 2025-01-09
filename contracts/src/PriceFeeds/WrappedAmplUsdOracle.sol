@@ -16,7 +16,7 @@ contract WrappedAmplUsdOracle is AggregatorV3Interface, Ownable, UUPSUpgradeable
 
     AggregatorV3Interface public constant ethUsdOracle = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
 
-    int256 public constant UNIT = 1e8;
+    int256 public constant UNIT = 1e18;
 
     constructor() {
         _disableInitializers();
