@@ -57,7 +57,7 @@ contract SpotUsdOracle is AggregatorV3Interface, Ownable, UUPSUpgradeable {
             300 // secondsAgo
         );
         (, int256 _usdcUsdPrice,, uint256 updatedAt,) = usdcUsdOracle.latestRoundData();
-        return (int256(OracleLibrary.getQuoteAtTick(_tick, TOKEN1_DECIMALS, token1, token0)) * (UNIT / TOKEN0_DECIMALS)
-            * _usdcUsdPrice / UNIT, updatedAt);
+        return
+            (int256(OracleLibrary.getQuoteAtTick(_tick, TOKEN1_DECIMALS, token1, token0)) * _usdcUsdPrice / TOKEN0_DECIMALS, updatedAt);
     }
 }
