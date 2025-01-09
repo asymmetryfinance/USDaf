@@ -450,7 +450,7 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
             "USDC-USDaf",
             "USDCUSDaf",
             coins,
-            200, // A
+            100, // A
             1000000, // fee
             20000000000, // _offpeg_fee_multiplier
             866, // _ma_exp_time
