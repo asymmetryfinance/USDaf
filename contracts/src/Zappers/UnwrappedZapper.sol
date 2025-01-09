@@ -4,21 +4,19 @@ pragma solidity 0.8.24;
 
 import "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import {IWrapper} from "./Interfaces/IWrapper.sol";
-
 import "./BaseZapper.sol";
 import "../Dependencies/Constants.sol";
 
 abstract contract UnwrappedZapper is BaseZapper {
     using SafeERC20 for IERC20;
 
-    IWrapper public immutable collToken;
+    address public immutable collToken;
     IERC20 public immutable unwrappedCollToken;
 
     constructor(IAddressesRegistry _addressesRegistry, address _unwrappedCollToken)
         BaseZapper(_addressesRegistry, IFlashLoanProvider(address(0)), IExchange(address(0)))
     {
-        collToken = IWrapper(address(_addressesRegistry.collToken()));
+        collToken = address(_addressesRegistry.collToken());
         require(address(WETH) != address(collToken), "GCZ: Wrong coll branch");
 
         unwrappedCollToken = IERC20(_unwrappedCollToken);

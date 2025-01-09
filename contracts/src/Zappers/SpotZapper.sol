@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.24;
 
+import {IWrapper} from "./Interfaces/IWrapper.sol";
+
 import "./UnwrappedZapper.sol";
 
 contract SpotZapper is UnwrappedZapper {
@@ -17,10 +19,10 @@ contract SpotZapper is UnwrappedZapper {
         uint256 collAmountInStrangeDecimals = _amount / 10 ** _DECIMALS_DIFF;
         require(collAmountInStrangeDecimals * 10 ** _DECIMALS_DIFF == _amount, "!precision");
         unwrappedCollToken.safeTransferFrom(msg.sender, address(this), collAmountInStrangeDecimals);
-        collToken.depositFor(address(this), collAmountInStrangeDecimals);
+        IWrapper(collToken).depositFor(address(this), collAmountInStrangeDecimals);
     }
 
     function _sendColl(address _receiver, uint256 _amount) internal override {
-        collToken.withdrawTo(_receiver, _amount);
+        IWrapper(collToken).withdrawTo(_receiver, _amount);
     }
 }

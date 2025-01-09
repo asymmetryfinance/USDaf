@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.24;
 
+import {IAmplWrapper} from "./Interfaces/IAmplWrapper.sol";
+
 import "./UnwrappedZapper.sol";
 
 contract AmplZapper is UnwrappedZapper {
@@ -12,11 +14,13 @@ contract AmplZapper is UnwrappedZapper {
     constructor(IAddressesRegistry _addressesRegistry) UnwrappedZapper(_addressesRegistry, _AMPL) {}
 
     function _pullColl(uint256 _amount) internal override {
-        unwrappedCollToken.safeTransferFrom(msg.sender, address(this), _amount);
-        collToken.depositFor(address(this), _amount);
+        uint256 amples = IAmplWrapper(collToken).wrapperToUnderlying(_amount) + 1; // +1 due to rounding
+        unwrappedCollToken.safeTransferFrom(msg.sender, address(this), amples);
+        IAmplWrapper(collToken).depositFor(address(this), amples);
     }
 
     function _sendColl(address _receiver, uint256 _amount) internal override {
-        collToken.withdrawTo(_receiver, _amount);
+        uint256 amples = IAmplWrapper(collToken).wrapperToUnderlying(_amount);
+        IAmplWrapper(collToken).withdrawTo(_receiver, amples);
     }
 }
