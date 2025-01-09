@@ -14,13 +14,12 @@ contract AmplZapper is UnwrappedZapper {
     constructor(IAddressesRegistry _addressesRegistry) UnwrappedZapper(_addressesRegistry, _AMPL) {}
 
     function _pullColl(uint256 _amount) internal override {
-        uint256 amples = IAmplWrapper(collToken).wrapperToUnderlying(_amount) + 1; // +1 due to rounding
+        uint256 amples = IAmplWrapper(collToken).wrapperToUnderlying(_amount);
         unwrappedCollToken.safeTransferFrom(msg.sender, address(this), amples);
-        IAmplWrapper(collToken).depositFor(address(this), amples);
+        IAmplWrapper(collToken).mint(_amount);
     }
 
     function _sendColl(address _receiver, uint256 _amount) internal override {
-        uint256 amples = IAmplWrapper(collToken).wrapperToUnderlying(_amount);
-        IAmplWrapper(collToken).withdrawTo(_receiver, amples);
+        IAmplWrapper(collToken).burnTo(_receiver, _amount);
     }
 }
