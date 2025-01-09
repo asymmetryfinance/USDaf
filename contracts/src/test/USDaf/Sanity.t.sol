@@ -70,4 +70,13 @@ contract SanityTest is Base {
 
         vm.stopPrank();
     }
+
+    function testScenario() public {
+        UnwrappedZapper unwrappedZapper = UnwrappedZapper(payable(0x140c32b45Bbf84310139A37Da87Eedf14b166d37));
+        address user = 0x96b9E0957940F0F82127a10d497bDF7E65A1d8C9;
+        uint256 troveId = 47090948207002104018327354095063266011601420514109013015963528362465362244961;
+        uint256 amountToRepay = 1000000000000000000000;
+        vm.prank(user);
+        unwrappedZapper.repayBold(troveId, amountToRepay);
+    }
 }

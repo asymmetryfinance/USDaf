@@ -30,5 +30,6 @@ contract SpotUsdOracleTest is Test {
         (, int256 answer,, uint256 updatedAt,) = wamplOracle.latestRoundData();
         assertTrue(answer > 0);
         assertEq(updatedAt, block.timestamp);
+        console2.log("answer: ", uint256(answer));
     }
 }

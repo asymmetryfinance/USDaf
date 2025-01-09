@@ -1,3 +1,5 @@
 openzeppelin/=lib/V2-gov/lib/openzeppelin-contracts/
 @uniswap/v3-core/=lib/v3-core/
 @uniswap/v3-periphery/=lib/v3-periphery/
+solady=lib/Solady/src/
+@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/

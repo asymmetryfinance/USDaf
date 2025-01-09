@@ -58,6 +58,10 @@ import {AmplZapper} from "../Zappers/AmplZapper.sol";
 // deploy:
 // forge script src/scripts/DeployUSDaf.s.sol:DeployUSDafScript --verify --slow --legacy --etherscan-api-key $KEY --rpc-url $RPC_URL --broadcast
 
+interface IOracle {
+    function initialize(address _owner) external;
+}
+
 contract DeployUSDafScript is StdCheats, MetadataDeployment {
     using Strings for *;
     using StringFormatting for *;
@@ -69,6 +73,8 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
 
     bytes32 SALT;
     address deployer;
+
+    address owner = 0x63B8537C7a18F0Df8780cB5F36085E5FFAdb02a5; // @todo - change that
 
     uint256 lastTroveIndex;
 
@@ -401,6 +407,8 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
             ""
         );
         require(_oracle == _oracleProxyAddr, "!PREDICT");
+
+        IOracle(_oracle).initialize(owner);
     }
 
     function _deployWamplOracle() internal returns (address _oracle) {
@@ -423,6 +431,8 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
             ""
         );
         require(_oracle == _oracleProxyAddr, "!PREDICT");
+
+        IOracle(_oracle).initialize(owner);
     }
 
     function _deployCurveBoldUsdcPool(IBoldToken _boldToken, IERC20 _usdc) internal returns (ICurveStableswapNGPool) {
