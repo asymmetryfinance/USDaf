@@ -298,13 +298,16 @@ contract DeployUSDafScript is StdCheats, MetadataDeployment {
             SALT, keccak256(getBytecode(type(BorrowerOperations).creationCode, address(contracts.addressesRegistry)))
         );
 
+        uint256 _stalenessThreshold = 1 days;
         if (address(_collToken) == address(wrappedSpot)) {
+            _stalenessThreshold = 1 days; // heartbeat 86400
             contracts.oracle = _deploySpotOracle();
         } else {
+            _stalenessThreshold = 1 hours; // heartbeat 3600
             contracts.oracle = _deployWamplOracle();
         }
 
-        contracts.priceFeed = new WETHPriceFeed(addresses.borrowerOperations, contracts.oracle, _24_HOURS);
+        contracts.priceFeed = new WETHPriceFeed(addresses.borrowerOperations, contracts.oracle, _stalenessThreshold);
         contracts.interestRouter = new MockInterestRouter();
 
         addresses.troveManager = _troveManagerAddress;

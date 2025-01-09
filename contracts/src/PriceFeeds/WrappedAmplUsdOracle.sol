@@ -45,15 +45,17 @@ contract WrappedAmplUsdOracle is AggregatorV3Interface, Ownable, UUPSUpgradeable
         override
         returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)
     {
-        return (0, _calcPrice(), 0, block.timestamp, 0);
+        (int256 _price, uint256 _updatedAt) = _calcPrice();
+        return (0, _price, 0, _updatedAt, 0);
     }
 
-    function _calcPrice() private view returns (int256) {
+    function _calcPrice() private view returns (int256, uint256) {
         (int24 _tick,) = OracleLibrary.consult(
             pool,
             300 // secondsAgo
         );
-        (, int256 _ethUsdPrice,,,) = ethUsdOracle.latestRoundData();
-        return int256(OracleLibrary.getQuoteAtTick(_tick, uint128(uint256(UNIT)), token1, token0)) * _ethUsdPrice / UNIT;
+        (, int256 _ethUsdPrice,, uint256 updatedAt,) = ethUsdOracle.latestRoundData();
+        return
+            (int256(OracleLibrary.getQuoteAtTick(_tick, uint128(uint256(UNIT)), token1, token0)) * _ethUsdPrice / UNIT, updatedAt);
     }
 }
