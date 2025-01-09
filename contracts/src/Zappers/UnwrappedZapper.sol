@@ -212,7 +212,7 @@ abstract contract UnwrappedZapper is BaseZapper {
         InitialBalances memory _initialBalances
     ) internal {
         // Send coll left
-        if (!_isCollIncrease) {
+        if (!_isCollIncrease && _collChange > 0) {
             _sendColl(_receiver, _collChange);
         }
 
