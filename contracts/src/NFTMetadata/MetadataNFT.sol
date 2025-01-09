@@ -31,6 +31,8 @@ interface IMetadataNFT {
 contract MetadataNFT is IMetadataNFT, Ownable {
     FixedAssetReader public assetReader;
 
+    event AssetReaderUpdated(address indexed _assetReader);
+
     address public constant OWNER = 0x263b03BbA0BbbC320928B6026f5eAAFAD9F1ddeb;
 
     string public constant name = "USDaf Trove";
@@ -42,6 +44,7 @@ contract MetadataNFT is IMetadataNFT, Ownable {
 
     function updateAssetReader(FixedAssetReader _assetReader) external onlyOwner {
         assetReader = _assetReader;
+        emit AssetReaderUpdated(address(_assetReader));
     }
 
     function uri(TroveData memory _troveData) public view returns (string memory) {
