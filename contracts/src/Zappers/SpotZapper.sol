@@ -15,12 +15,12 @@ contract SpotZapper is UnwrappedZapper {
 
     function _pullColl(uint256 _amount) internal override {
         uint256 collAmountInStrangeDecimals = _amount / 10 ** _DECIMALS_DIFF;
+        require(collAmountInStrangeDecimals * 10 ** _DECIMALS_DIFF == _amount, "!precision");
         unwrappedCollToken.safeTransferFrom(msg.sender, address(this), collAmountInStrangeDecimals);
         collToken.depositFor(address(this), collAmountInStrangeDecimals);
     }
 
     function _sendColl(address _receiver, uint256 _amount) internal override {
-        uint256 collAmountInStrangeDecimals = _amount / 10 ** _DECIMALS_DIFF;
-        collToken.withdrawTo(_receiver, collAmountInStrangeDecimals);
+        collToken.withdrawTo(_receiver, _amount);
     }
 }
