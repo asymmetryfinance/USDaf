@@ -153,7 +153,7 @@ export default {
         description: "Cover liquidations to earn USDaf and collateral assets.",
       },
       stake: {
-        title: "Stake LQTY",
+        title: "Stake ASF",
         description: "Accrue voting power by staking your LQTY without a minimum lockup period.",
       },
     },

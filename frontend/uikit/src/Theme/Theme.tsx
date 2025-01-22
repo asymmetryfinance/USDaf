@@ -1,35 +1,39 @@
 import type { ReactNode } from "react";
-
 import { createContext, useContext, useState } from "react";
 
 // The Liquity V2 base color palette, meant
 // to be used by themes rather than directly.
 export const colors = {
   // Blue
-  "blue:50": "#F0F3FE",
-  "blue:100": "#DEE4FB",
-  "blue:200": "#C4D0F9",
-  "blue:300": "#9CB1F4",
-  "blue:400": "#6D8AED",
-  "blue:500": "#405AE5",
-  "blue:600": "#3544DB",
-  "blue:700": "#2D33C8",
-  "blue:800": "#2A2BA3",
-  "blue:900": "#272A81",
-  "blue:950": "#1C1D4F",
+  "blue:50":  "#E4F1FF",
+  "blue:100": "#BCDFFF",
+  "blue:200": "#95CEFF",
+  "blue:300": "#2C8CFD",
+  "blue:400": "#137EFC",
+  "blue:500": "#036EEE",
+  "blue:600": "#025DCA",
+  "blue:700": "#024BA1",
+  "blue:800": "#033674",
+  "blue:900": "#022146",
+  "blue:950": "#010B17",
 
-  // Gray
-  "gray:50": "#F5F6F8",
-  "gray:100": "#EDEFF2",
-  "gray:200": "#DDE0E8",
-  "gray:300": "#C8CDD9",
-  "gray:400": "#B1B7C8",
-  "gray:500": "#9EA2B8",
-  "gray:600": "#878AA4",
-  "gray:700": "#73748F",
-  "gray:800": "#5F6174",
-  "gray:900": "#50525F",
-  "gray:950": "#2F3037",
+  // Gray (Cream Range)
+  // Light creams for backgrounds + slightly darker creams
+  // for containers
+  "gray:50":  "#F9F2E7",
+  "gray:100": "#F5E9DB",
+  "gray:200": "#F2E2D2",
+  "gray:300": "#EBD6C1",
+  "gray:400": "#E2C7AA",
+  "gray:500": "#D7B890",
+  "gray:600": "#C8A777",
+  "gray:700": "#B59764",
+  "gray:800": "#9E8054",
+  "gray:900": "#8A6E49",
+
+  // Make 950 a near-black or very deep brown
+  // for strong text contrast
+  "gray:950": "#2B2B2B",
 
   // Yellow
   "yellow:50": "#FDFBE9",
@@ -78,13 +82,15 @@ export const colors = {
   "desert:100": "#EFECE5",
   "desert:950": "#2C231E",
 
-  // White
-  "white": "#FFFFFF",
+  // White (your default background color)
+  // If you prefer a different shade for the main
+  // background, tweak this
+  "white": "#F8F0E3",
 
   // Brand colors
-  "brand:blue": "#405AE5",
-  "brand:lightBlue": "#6D8AED",
-  "brand:darkBlue": "#121B44",
+  "brand:blue": "#036EEE",
+  "brand:lightBlue": "#2C8CFD",
+  "brand:darkBlue": "#022146",
   "brand:green": "#63D77D",
   "brand:golden": "#F5D93A",
   "brand:cyan": "#95CBF3",
@@ -92,15 +98,7 @@ export const colors = {
   "brand:brown": "#DBB79B",
 };
 
-// The light theme, which is the only theme for now. These
-// colors are meant to be used by components via useTheme(),
-// so that the theme can be changed at runtime.
-
-// Some notes about naming conventions:
-// - "xContent" is the color used over a "x" background (text, icons or outlines).
-// - "xHint" is the color used to hint that "x" is interactive (generally on hover).
-// - "xActive" is the color used to indicate that "x" is being interacted with (generally on press).
-// - "xSurface" is the color used for the surface of "x" (generally the background).
+// The light theme, used by components via useTheme()
 export const lightTheme = {
   name: "light" as const,
   colors: {
@@ -108,33 +106,49 @@ export const lightTheme = {
     accentActive: "blue:600",
     accentContent: "white",
     accentHint: "blue:400",
+
+    // Make your entire app background “white” -> #F8F0E3
     background: "white",
     backgroundActive: "gray:50",
+
     border: "gray:200",
     borderSoft: "gray:100",
+
+    // The big change: let normal text use near-black
+    // for strong contrast on cream.
     content: "gray:950",
-    contentAlt: "gray:600",
-    contentAlt2: "gray:500",
+
+    // Use a slightly lighter color for secondary text
+    contentAlt: "gray:800",
+    contentAlt2: "gray:700",
+
     controlBorder: "gray:300",
     controlBorderStrong: "blue:950",
     controlSurface: "white",
     controlSurfaceAlt: "gray:200",
+
     hint: "brown:50",
     infoSurface: "desert:50",
     infoSurfaceBorder: "desert:100",
     infoSurfaceContent: "desert:950",
-    dimmed: "gray:400",
+
+    dimmed: "gray:500",
     fieldBorder: "gray:100",
     fieldBorderFocused: "gray:300",
     fieldSurface: "gray:50",
+
     focused: "blue:500",
     focusedSurface: "blue:50",
     focusedSurfaceActive: "blue:100",
-    strongSurface: "blue:950",
+
+    // For your nav or strong cards:
+    strongSurface: "blue:900",
     strongSurfaceContent: "white",
-    strongSurfaceContentAlt: "gray:500",
-    strongSurfaceContentAlt2: "gray:100",
+    strongSurfaceContentAlt: "gray:100",
+    strongSurfaceContentAlt2: "gray:50",
+
     interactive: "blue:950",
+
     negative: "red:500",
     negativeStrong: "red:600",
     negativeActive: "red:600",
@@ -144,23 +158,28 @@ export const lightTheme = {
     negativeSurfaceBorder: "red:100",
     negativeSurfaceContent: "red:900",
     negativeSurfaceContentAlt: "red:400",
+
     positive: "green:500",
     positiveAlt: "green:400",
     positiveActive: "green:600",
     positiveContent: "white",
     positiveHint: "green:400",
+
     secondary: "blue:50",
     secondaryActive: "blue:200",
     secondaryContent: "blue:500",
     secondaryHint: "blue:100",
+
     selected: "blue:500",
     separator: "gray:50",
     surface: "white",
     tableBorder: "gray:100",
+
     warning: "yellow:400",
     disabledBorder: "gray:200",
     disabledContent: "gray:500",
     disabledSurface: "gray:50",
+
     brandBlue: "brand:blue",
     brandBlueContent: "white",
     brandBlueContentAlt: "blue:50",
@@ -189,26 +208,23 @@ export const lightTheme = {
     brandCyan: "brand:cyan",
     brandCoral: "brand:coral",
     brandBrown: "brand:brown",
-  } satisfies Record<string, (keyof typeof colors) | `#${string}`>,
+  },
 } as const;
 
 export type ThemeDescriptor = {
-  name: "light"; // will be "light" | "dark" once dark mode is added
-  colors: typeof lightTheme.colors; // lightTheme acts as a reference for types
+  name: "light";
+  colors: typeof lightTheme.colors;
 };
 export type ThemeColorName = keyof ThemeDescriptor["colors"];
 
 export function themeColor(theme: ThemeDescriptor, name: ThemeColorName) {
   const themeColor = theme.colors[name];
-
   if (themeColor.startsWith("#")) {
     return themeColor;
   }
-
   if (themeColor in colors) {
     return colors[themeColor as keyof typeof colors];
   }
-
   throw new Error(`Color ${themeColor} not found in theme`);
 }
 
@@ -226,11 +242,7 @@ export function useTheme() {
   };
 }
 
-export function Theme({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function Theme({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<ThemeDescriptor>(lightTheme);
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
