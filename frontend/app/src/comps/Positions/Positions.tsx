@@ -113,7 +113,7 @@ function PositionsGroup({
       }
 
       cards = cards.concat(
-        positions.map((position, index) => (
+        positions.map((position, index) =>
           match(position)
             .returnType<[number, ReactNode]>()
             .with({ type: P.union("borrow", "leverage") }, (p) => [
@@ -129,7 +129,7 @@ function PositionsGroup({
               <PositionCardStake key={index} {...p} />,
             ])
             .exhaustive()
-        )) ?? [],
+        ) ?? []
       );
 
       return cards;
@@ -142,12 +142,13 @@ function PositionsGroup({
     .with("actions", () =>
       showNewPositionCard
         ? [
-          [0, <ActionCard key="0" type="borrow" />],
-          [1, <ActionCard key="1" type="leverage" />],
-          [2, <ActionCard key="2" type="earn" />],
-          [3, <ActionCard key="3" type="stake" />],
-        ]
-        : [])
+            [0, <ActionCard key="0" type="borrow" />],
+            // Remove the "leverage" card when in actions mode:
+            [2, <ActionCard key="2" type="earn" />],
+            [3, <ActionCard key="3" type="stake" />],
+          ]
+        : []
+    )
     .exhaustive();
 
   if (mode === "actions") {
@@ -252,3 +253,4 @@ function PositionsGroup({
     </div>
   );
 }
+
